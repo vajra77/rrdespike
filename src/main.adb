@@ -14,7 +14,7 @@ procedure Main is
 
    -- Valore di soglia massimo per il traffico di rete (es. 10 Gbit/s in Byte/s)
    -- Modificabile in base alla velocità nominale dell'interfaccia.
-   Max_Traffic_Threshold : constant RRD_Float := 1_250_000_000.0;
+   Max_Traffic_Threshold : constant RRD_Float := 625_000_000_000.0; -- 5 Tbps
 
    -- Dimensione massima della sequenza di NaN da interpolare (es. 6 campioni consecutive = 30 min se step = 300s)
    Max_Interpolation_Gap : constant Positive := 6;
@@ -30,7 +30,7 @@ begin
    In_Path  := new String'(Argument (1));
    Out_Path := new String'(Argument (2));
 
-   Put_Line ("Caricamento file RRD: " & In_Path.all & " ...");
+   Put_Line ("Loading RRD file: " & In_Path.all & " ...");
 
    -- 2. Caricamento del file binario RRD in memoria
    RRD.Load (In_Path.all, Input_RRD);
