@@ -1,6 +1,7 @@
-with RRD.Types; use RRD.Types;
+with RRD; use RRD;
+with RRD_Types; use RRD_Types;
 
-package RRD.Algorithms is
+package RRD_Algorithms is
 
    -- Politica di sostituzione per lo spike rilevato
    type Replacement_Policy is (Replace_With_NaN, Replace_With_Previous, Replace_With_Median);
@@ -29,4 +30,4 @@ package RRD.Algorithms is
      (Data    : in out Value_Array;
       Max_Gap : Positive := 10);
 
-end RRD.Algorithms;
+end RRD_Algorithms;

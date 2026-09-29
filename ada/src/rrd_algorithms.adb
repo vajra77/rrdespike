@@ -1,6 +1,15 @@
 with Ada.Containers.Generic_Array_Sort;
 
-package body RRD.Algorithms is
+package body RRD_Algorithms is
+   function Make_NaN return RRD_Float is
+      Zero : RRD_Float := 0.0;
+   begin
+      -- Azzeramento indiretto a runtime per evitare la valutazione statica di GNAT
+      Zero := Zero + 0.0;
+      return Zero / Zero;
+   end Make_NaN;
+
+   IEEE_NaN : constant RRD_Float := Make_NaN;
 
    -- Utility per verificare se un valore RRD_Float è NaN
    function Is_NaN (Val : RRD_Float) return Boolean is
@@ -18,7 +27,7 @@ package body RRD.Algorithms is
       Max_Val : RRD_Float;
       Policy  : Replacement_Policy := Replace_With_NaN)
    is
-      Last_Valid : RRD_Float := RRD_Float'NaN;
+      Last_Valid : RRD_Float := IEEE_NaN;
    begin
       for I in Data'Range loop
          if not Is_NaN (Data (I)) then
@@ -26,7 +35,7 @@ package body RRD.Algorithms is
             if Data (I) < Min_Val or else Data (I) > Max_Val then
                case Policy is
                   when Replace_With_NaN =>
-                     Data (I) := RRD_Float'NaN;
+                     Data (I) := IEEE_NaN;
                   when Replace_With_Previous =>
                      Data (I) := Last_Valid;
                   when Replace_With_Median =>
@@ -55,7 +64,7 @@ package body RRD.Algorithms is
          Element_Type => RRD_Float,
          Array_Type   => Value_Array);
 
-      Half_Window : const Natural := Window_Size / 2;
+      Half_Window : constant Natural := Window_Size / 2;
       Win_Buffer  : Value_Array (1 .. Window_Size);
       Valid_Count : Natural;
       Mediana     : RRD_Float;
@@ -99,7 +108,7 @@ package body RRD.Algorithms is
                if Mad > 0.0 and then (Diff / Mad) > Threshold_Factor then
                   case Policy is
                      when Replace_With_NaN =>
-                        Data (I) := RRD_Float'NaN;
+                        Data (I) := IEEE_NaN;
                      when Replace_With_Median =>
                         Data (I) := Mediana;
                      when Replace_With_Previous =>
@@ -174,4 +183,4 @@ package body RRD.Algorithms is
       end loop;
    end Interpolate_NaN;
 
-end RRD.Algorithms;
+end RRD_Algorithms;

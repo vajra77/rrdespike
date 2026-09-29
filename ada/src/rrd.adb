@@ -1,7 +1,9 @@
 with Ada.Streams.Stream_IO; use Ada.Streams.Stream_IO;
 with Ada.Unchecked_Deallocation;
+with RRD_Algorithms;
 
 package body RRD is
+   subtype Long_Natural is Long_Long_Integer range 0 .. Long_Long_Integer'Last;
 
    procedure Free (Obj : in out File) is
       procedure Free_DS is new Ada.Unchecked_Deallocation (Data_Source_Array, Data_Source_Access);
@@ -150,13 +152,37 @@ package body RRD is
       DS_Idx  : Positive;
       Max_Val : RRD_Float)
    is
+      DS_Count    : constant Positive := Positive (Obj.Stat_Head.DS_Cnt);
+      Total_Rows  : constant Natural  := Obj.Data'Length / DS_Count;
+
+      -- Array temporaneo che conterra solo i dati del DS selezionato
+      DS_Values   : Value_Array (1 .. Total_Rows);
+      Read_Idx    : Positive;
    begin
-      -- Applica il filtro sulla porzione di array 'Data' appartenente al DS desiderato
-      RRD.Algorithms.Clean_Spikes_Threshold
-        (Data    => Obj.Data.all,
+      if Obj.Data = null or else DS_Idx > DS_Count then
+         return;
+      end if;
+
+      -- 1. Estrazione dei campioni appartenenti a DS_Idx
+      Read_Idx := DS_Idx;
+      for I in DS_Values'Range loop
+         DS_Values (I) := Obj.Data (Read_Idx);
+         Read_Idx      := Read_Idx + DS_Count;
+      end loop;
+
+      -- 2. Applicazione del filtro sulla serie estratta
+      RRD_Algorithms.Clean_Spikes_Threshold
+        (Data    => DS_Values,
          Min_Val => 0.0,
          Max_Val => Max_Val,
-         Policy  => RRD.Algorithms.Replace_With_NaN);
+         Policy  => RRD_Algorithms.Replace_With_NaN);
+
+      -- 3. Riscrittura dei valori filtrati nell'array principale Data
+      Read_Idx := DS_Idx;
+      for I in DS_Values'Range loop
+         Obj.Data (Read_Idx) := DS_Values (I);
+         Read_Idx            := Read_Idx + DS_Count;
+      end loop;
    end Clean_DS_Spikes;
 
    procedure Fix_Missing_Data
@@ -166,7 +192,7 @@ package body RRD is
    begin
       if Obj.Data /= null then
          -- Applica l'interpolazione lineare su tutto il buffer dei dati memorizzati
-         RRD.Algorithms.Interpolate_NaN
+         RRD_Algorithms.Interpolate_NaN
            (Data    => Obj.Data.all,
             Max_Gap => Max_Gap);
       end if;

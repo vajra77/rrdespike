@@ -1,8 +1,7 @@
 with Interfaces.C; use Interfaces.C;
-with System;
-with RRD.Types; use RRD.Types;
+with RRD_Types; use RRD_Types;
 
-package RRD.Format is
+package RRD_Format is
 
     type Header is record
       Cookie       : String_4;        -- "RRD\0"
@@ -54,7 +53,7 @@ package RRD.Format is
       -- Padding di 4 byte aggiunto per allineare Row_Cnt a 8 byte
       Row_Cnt at 24  range 0 .. 63;  -- 8 byte
       PDP_Cnt at 32  range 0 .. 63;  -- 8 byte
-      Par     : at 40 range 0 .. 639; -- 80 byte
+      Par     at 40 range 0 .. 639; -- 80 byte
    end record;
    -- Dimensione totale RRA_Definition = 120 byte
 
@@ -88,4 +87,4 @@ package RRD.Format is
       Cur_Row : RRD_Ulong;  -- Indice della riga corrente nel buffer circolare
    end record with Convention => C;
 
-end RRD.Format;
+end RRD_Format;

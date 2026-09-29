@@ -1,10 +1,11 @@
 with Ada.Text_IO;         use Ada.Text_IO;
 with Ada.Command_Line;    use Ada.Command_Line;
 with Ada.Exceptions;      use Ada.Exceptions;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
 with RRD;              use RRD;
-with RRD.Types;        use RRD.Types;
-with RRD.Algorithms;   use RRD.Algorithms;
+with RRD_Types;        use RRD_Types;
+with RRD_Algorithms;   use RRD_Algorithms;
 
 procedure Main is
    In_Path  : String_Access;
@@ -40,16 +41,16 @@ begin
    Put_Line ("Cleaning spikes (max threshold: " & Max_Traffic_Threshold'Img & ") ...");
 
    if Input_RRD.Data /= null then
-      RRD.Algorithms.Clean_Spikes_Threshold
+      RRD_Algorithms.Clean_Spikes_Threshold
         (Data    => Input_RRD.Data.all,
          Min_Val => 0.0,
          Max_Val => Max_Traffic_Threshold,
-         Policy  => RRD.Algorithms.Replace_With_NaN);
+         Policy  => RRD_Algorithms.Replace_With_NaN);
 
       -- 4. Interpolazione dei buco dati (NaN)
       Put_Line ("Interpolating null points (max gap: " & Max_Interpolation_Gap'Img & " samples) ...");
 
-      RRD.Algorithms.Interpolate_NaN
+      RRD_Algorithms.Interpolate_NaN
         (Data    => Input_RRD.Data.all,
          Max_Gap => Max_Interpolation_Gap);
    end if;

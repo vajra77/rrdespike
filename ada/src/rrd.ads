@@ -1,5 +1,5 @@
-with RRD.Types;  use RRD.Types;
-with RRD.Format; use RRD.Format;
+with RRD_Types;  use RRD_Types;
+with RRD_Format; use RRD_Format;
 
 package RRD is
 
