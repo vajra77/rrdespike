@@ -1,0 +1,10 @@
+name = "rrdespike"
+description = "Removes spikes from RRD files"
+version = "0.1.0-dev"
+
+authors = ["Francesco Ferreri"]
+maintainers = ["Francesco Ferreri <f.ferreri@namex.it>"]
+maintainers-logins = ["vajra77"]
+licenses = "MIT"
+website = "https://github.com/vajra77/rrdespike"
+tags = ["rrd", "rrdtool", "database", "data", "snmp"]
