@@ -1,3 +1,5 @@
+with Interfaces.C; use Interfaces.C
+
 package RRD.Types is
 
    -- Stringhe a dimensione fissa modellate come array di caratteri C
